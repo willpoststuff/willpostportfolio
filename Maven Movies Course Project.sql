@@ -85,7 +85,6 @@ SELECT
         ELSE 'You have a code error here' 
         END AS customer_status,
     a.address,
-    a.address2,
     city.city,
     country.country
 FROM customer AS c
@@ -104,7 +103,7 @@ with the most valuable customers at the top of the list. */
 SELECT
     c.first_name,
     c.last_name,
-    COUNT(DISTINCT r.rental_id) AS total_lifetime_rentals,
+    COUNT(r.rental_id) AS total_lifetime_rentals,
     SUM(p.amount) AS total_payments_taken
 FROM
 	customer AS c
@@ -139,3 +138,19 @@ FROM investor;
 awards, for what % of them do we carry a film? And how about for actors with two types of awards? Same 
 questions. Finally, how about actors with just one award? */
 
+SELECT
+	CASE
+		WHEN actor_award.awards = 'Emmy, Oscar, Tony ' THEN '3 awards'
+        WHEN actor_award.awards IN ('Emmy, Oscar','Emmy, Tony','Oscar,Tony') THEN '2 awards'
+        ELSE '1 award'
+	END AS number_of_awards,
+    AVG(CASE WHEN actor_award.actor_id IS NULL THEN 0 ELSE 1 END) AS pct_w_one_film
+    
+FROM actor_award
+
+GROUP BY
+	CASE 
+		WHEN actor_award.awards = 'Emmy, Oscar, Tony ' THEN '3 awards'
+		WHEN actor_award.awards IN ('Emmy, Oscar','Emmy, Tony','Oscar,Tony') THEN '2 awards'
+        ELSE '1 award'
+	END
